@@ -1360,14 +1360,14 @@ MU_TEST(test_salvarArquivo)
 
 MU_TEST(test_treinamento_tecnico)
 {
-    // Cria um arquivo temporário com dados fictícios
+    
 
     leArquivo("jogadores.txt");
 
-    // Chama diretamente a função treinamento com o tipo de treinamento
+   
     treinar_tecnica(&meuTime);
 
-    // Testa se os jogadores foram treinados corretamente
+  
 
     mu_assert_int_eq(3, meuTime.jogadores[0].tecnica);
 
@@ -1375,14 +1375,14 @@ MU_TEST(test_treinamento_tecnico)
 }
 MU_TEST(test_treinamento_tatico)
 {
-    // Cria um arquivo temporário com dados fictícios
+  
 
     leArquivo("jogadores.txt");
 
-    // Chama diretamente a função treinamento com o tipo de treinamento
+    
     treinar_tatica(&meuTime);
 
-    // Testa se os jogadores foram treinados corretamente
+   
 
     mu_assert_int_eq(3, meuTime.jogadores[0].tatica);
 
@@ -1391,28 +1391,26 @@ MU_TEST(test_treinamento_tatico)
 
 MU_TEST(test_treinamento_fisico)
 {
-    // Cria um arquivo temporário com dados fictícios
+    
 
     leArquivo("jogadores.txt");
 
-    // Chama diretamente a função treinamento com o tipo de treinamento
     treinar_fisico(&meuTime);
 
-    // Testa se os jogadores foram treinados corretamente
-
+    
     mu_assert_int_eq(5, meuTime.jogadores[0].fisico);
 
     mu_assert_int_eq(5, meuTime.jogadores[1].fisico);
 }
 
 MU_TEST(test_escalacao_4_4_2)
-{ // Cria um arquivo temporário com dados fictícios
+{ 
 
     Time meuTime;
 
     leArquivo("jogadores.txt");
     int escolha = 1;
-    // Chame a função de escalacao
+    
     escalacao(meuTime, escolha);
 
     int numAtacantes = 0;
@@ -1448,13 +1446,13 @@ MU_TEST(test_escalacao_4_4_2)
 }
 
 MU_TEST(test_escalacao_4_3_3)
-{ // Cria um arquivo temporário com dados fictícios
+{ 
 
     Time meuTime;
 
     leArquivo("jogadores.txt");
     int escolha = 2;
-    // Chame a função de escalacao
+   
     escalacao(meuTime, escolha);
 
     int numAtacantes = 0;
@@ -1490,13 +1488,13 @@ MU_TEST(test_escalacao_4_3_3)
 }
 
 MU_TEST(test_escalacao_3_4_3)
-{ // Cria um arquivo temporário com dados fictícios
+{ 
 
     Time meuTime;
 
     leArquivo("jogadores.txt");
     int escolha = 3;
-    // Chame a função de escalacao
+   
     escalacao(meuTime, escolha);
 
     int numAtacantes = 0;
@@ -1540,7 +1538,7 @@ MU_TEST(test_jogo)
     escalacao(meuTime, escolha);
     int resultado = jogo(meuTime, time2);
 
-    // Verifique se o resultado é válido
+   
     mu_assert(resultado >= 0, "Erro: resultado inválido.");
 }
 
@@ -1554,7 +1552,7 @@ MU_TEST(test_jogo2)
 
     int resultado = jogo2pt1(time3, time4);
 
-    // Verifique se o resultado é válido
+    
     mu_assert(resultado >= 0, "Erro: resultado inválido.");
 }
 
@@ -1568,7 +1566,7 @@ MU_TEST(test_CalcularMedias)
     mu_assert_int_eq(125.0, meuTime.ataque);
 }
 
-// Função que roda todos os testes
+
 MU_TEST_SUITE(test_suite)
 {
     MU_RUN_TEST(test_leArquivo);
@@ -1579,6 +1577,8 @@ MU_TEST_SUITE(test_suite)
     MU_RUN_TEST(test_escalacao_4_4_2);
     MU_RUN_TEST(test_escalacao_4_3_3);
     MU_RUN_TEST(test_escalacao_3_4_3);
+    MU_RUN_TEST(test_jogo);
+    MU_RUN_TEST(test_jogo2);
     MU_RUN_TEST(test_CalcularMedias);
 }
 
