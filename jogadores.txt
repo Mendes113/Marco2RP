@@ -1,0 +1,24 @@
+Adriel;G;2;2;4
+Alan Patrik;M;3;9;4
+Aldemir Ferreira;A;4;10;2
+Alexandre Alemão;A;10;2;1
+Bruno Uvini;Z;9;3;3
+Carlos de Pena;M;3;8;5
+Charles Aránguiz;M;10;8;9
+Diego Souza;A;3;5;4
+Franco Cristaldo;M;3;1;9
+Gabriel Franco;M;2;5;5
+Gabriel Mercado;Z;9;10;4
+João Bitello;M;2;3;1
+Keiller;G;1;6;2
+Luis Soares;A;4;5;5
+Luiz Adriano;A;10;6;5
+Mathias Villasanti;M;1;4;3
+Maurício;M;2;4;4
+Pedor Geromel;Z;8;3;2
+Pedro Henrique;A;4;10;9
+Pepê;M;1;9;7
+Rodrigo Moledo;Z;9;6;5
+Vina;M;9;6;5
+Vitão;Z;1;2;7
+Walter Kannemann;Z;7;8;1

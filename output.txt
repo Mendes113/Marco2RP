@@ -1,0 +1,54 @@
+Você escolheu a escalaçAo 4-4-2 
+Atacantes escolhidos:
+- Aldemir Ferreira (Reserva)
+- Alexandre Alemão (Reserva)
+- Diego Souza (Reserva)
+- Luis Soares (Reserva)
+- Luiz Adriano
+- Pedro Henrique
+Zagueiros escolhidos:
+- Bruno Uvini
+- Gabriel Mercado (Reserva)
+- Pedor Geromel
+- Rodrigo Moledo (Reserva)
+- Vitão
+- Walter Kannemann
+Meio escolhidos:
+- Alan Patrik (Reserva)
+- Carlos de Pena
+- Charles Aránguiz
+- Franco Cristaldo
+- Gabriel Franco (Reserva)
+- João Bitello (Reserva)
+- Mathias Villasanti (Reserva)
+- Maurício
+Goleiro escolhido:
+- Keiller
+4-4-2:
+Atacantes:
+- Pedro Henrique
+- Luiz Adriano
+Meio-campistas:
+- Carlos de Pena
+- Franco Cristaldo
+- Maurício
+- Charles Aránguiz
+Zagueiros:
+- Walter Kannemann
+- Vitão
+- Bruno Uvini
+- Pedor Geromel
+Goleiro:
+- Keiller
+Reservas:
+- Aldemir Ferreira
+- Alexandre Alemão
+- Diego Souza
+- Luis Soares
+- Gabriel Mercado
+- Rodrigo Moledo
+- Alan Patrik
+- Gabriel Franco
+- João Bitello
+- Mathias Villasanti
+- 
