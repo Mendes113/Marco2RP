@@ -122,7 +122,7 @@ void salvarArquivo(char *nomeArquivo, Time meuTime)
 
 //----------------------------------------------//
 
-void calcular_medias(Jogador *jogadores, int num_jogadores, Time *meuTime)
+float calcular_medias(Jogador *jogadores, int num_jogadores, Time *meuTime)
 {
     float soma_tatica = 0, soma_tecnica = 0, soma_fisico = 0, soma_defesa = 0, soma_ataque = 0;
     float a = 0.5, b = 0.3, c = 0.2, d = 0.4, e = 0.5, f = 0.1; // valores iniciais das constantes
@@ -139,6 +139,8 @@ void calcular_medias(Jogador *jogadores, int num_jogadores, Time *meuTime)
 
     printf("Defesa: %.2f\n", meuTime->defesa);
     printf("Ataque: %.2f\n", meuTime->ataque);
+
+    return meuTime->defesa, meuTime->ataque;
 }
 
 void imprime_jogadores(Jogador *jogadores, int num_jogadores)
@@ -942,7 +944,7 @@ void mostra343(Tres_quatro_tres tres_quatro_tres)
 
 Time time3;
 Time time4;
-Time time2 = {"Joinville", 120.0, 130.2, {} };
+Time time2 = {"Joinville", 120.0, 130.2, {}};
 
 void chanceGol442(Quatro_quatro_dois quatro_quatro_dois);
 void chanceGol433(Quatro_tres_tres quatro_tres_tres);
@@ -989,26 +991,20 @@ void chanceGol442(Quatro_quatro_dois quatro_quatro_dois)
         int jogadorGol = jogadoresEscolhidos[rand() % numJogadoresEscolhidos];
 
         if (strcmp(quatro_quatro_dois.meio_campo[jogadorGol].posicao, "M") == 0 ||
-            strcmp(quatro_quatro_dois.defensores[jogadorGol].posicao, "Z") == 0
-            || strcmp(quatro_quatro_dois.atacantes[jogadorGol].posicao, "A") == 0)
+            strcmp(quatro_quatro_dois.defensores[jogadorGol].posicao, "Z") == 0 || strcmp(quatro_quatro_dois.atacantes[jogadorGol].posicao, "A") == 0)
 
         {
             if (strcmp(quatro_quatro_dois.meio_campo[jogadorGol].posicao, "M") == 0)
                 printf("%s (Meio-campista) fez o gol!\n", quatro_quatro_dois.meio_campo[jogadorGol].nome);
-            if(strcmp(quatro_quatro_dois.defensores[jogadorGol].posicao, "Z") == 0)
+            if (strcmp(quatro_quatro_dois.defensores[jogadorGol].posicao, "Z") == 0)
                 printf("%s (Defensor) fez o gol!\n", quatro_quatro_dois.defensores[jogadorGol].nome);
-            if(strcmp(quatro_quatro_dois.atacantes[jogadorGol].posicao, "A") == 0)
+            if (strcmp(quatro_quatro_dois.atacantes[jogadorGol].posicao, "A") == 0)
                 printf("%s (Atacante) fez o gol!\n", quatro_quatro_dois.atacantes[jogadorGol].nome);
 
             golFeito = 1;
         }
     }
-
-    
-
-   
 }
-
 
 void chanceGol433(Quatro_tres_tres quatro_tres_tres)
 {
@@ -1051,24 +1047,19 @@ void chanceGol433(Quatro_tres_tres quatro_tres_tres)
         int jogadorGol = jogadoresEscolhidos[rand() % numJogadoresEscolhidos];
 
         if (strcmp(quatro_tres_tres.meio_campo[jogadorGol].posicao, "M") == 0 ||
-            strcmp(quatro_tres_tres.defensores[jogadorGol].posicao, "Z") == 0
-            || strcmp(quatro_tres_tres.atacantes[jogadorGol].posicao, "A") == 0)
+            strcmp(quatro_tres_tres.defensores[jogadorGol].posicao, "Z") == 0 || strcmp(quatro_tres_tres.atacantes[jogadorGol].posicao, "A") == 0)
 
         {
             if (strcmp(quatro_tres_tres.meio_campo[jogadorGol].posicao, "M") == 0)
                 printf("%s (Meio-campista) fez o gol!\n", quatro_tres_tres.meio_campo[jogadorGol].nome);
-            if(strcmp(quatro_tres_tres.defensores[jogadorGol].posicao, "Z") == 0)
+            if (strcmp(quatro_tres_tres.defensores[jogadorGol].posicao, "Z") == 0)
                 printf("%s (Defensor) fez o gol!\n", quatro_tres_tres.defensores[jogadorGol].nome);
-            if(strcmp(quatro_tres_tres.atacantes[jogadorGol].posicao, "A") == 0)
+            if (strcmp(quatro_tres_tres.atacantes[jogadorGol].posicao, "A") == 0)
                 printf("%s (Atacante) fez o gol!\n", quatro_tres_tres.atacantes[jogadorGol].nome);
 
             golFeito = 1;
         }
     }
-
-    
-
-   
 }
 void chanceGol343(Tres_quatro_tres tres_quatro_tres)
 {
@@ -1111,26 +1102,20 @@ void chanceGol343(Tres_quatro_tres tres_quatro_tres)
         int jogadorGol = jogadoresEscolhidos[rand() % numJogadoresEscolhidos];
 
         if (strcmp(tres_quatro_tres.meio_campo[jogadorGol].posicao, "M") == 0 ||
-            strcmp(tres_quatro_tres.defensores[jogadorGol].posicao, "Z") == 0
-            || strcmp(tres_quatro_tres.atacantes[jogadorGol].posicao, "A") == 0)
+            strcmp(tres_quatro_tres.defensores[jogadorGol].posicao, "Z") == 0 || strcmp(tres_quatro_tres.atacantes[jogadorGol].posicao, "A") == 0)
 
         {
             if (strcmp(tres_quatro_tres.meio_campo[jogadorGol].posicao, "M") == 0)
                 printf("%s (Meio-campista) fez o gol!\n", tres_quatro_tres.meio_campo[jogadorGol].nome);
-            if(strcmp(tres_quatro_tres.defensores[jogadorGol].posicao, "Z") == 0)
+            if (strcmp(tres_quatro_tres.defensores[jogadorGol].posicao, "Z") == 0)
                 printf("%s (Defensor) fez o gol!\n", tres_quatro_tres.defensores[jogadorGol].nome);
-            if(strcmp(tres_quatro_tres.atacantes[jogadorGol].posicao, "A") == 0)
+            if (strcmp(tres_quatro_tres.atacantes[jogadorGol].posicao, "A") == 0)
                 printf("%s (Atacante) fez o gol!\n", tres_quatro_tres.atacantes[jogadorGol].nome);
 
             golFeito = 1;
         }
     }
-
-    
-
-   
 }
-
 
 int jogo2pt1(Time meuTime, Time timeAdversario)
 {
@@ -1210,8 +1195,6 @@ int jogo2pt1(Time meuTime, Time timeAdversario)
 
     return golsTime3, golsTime4;
 }
-
-
 
 void segundoTempo(Time time3, Time time4, int *golsTime3, int *golsTime4)
 {
@@ -1302,7 +1285,6 @@ int jogo(Time meuTime, Time time2)
     while (difftime(time(NULL), start_time) < 90.0)
     { // loop de 90 minutos
 
-        
         // Verifica se já passaram 5 segundos desde a última tentativa de gol
         if (difftime(time(NULL), last_attempt_time) >= 5.0)
         {
@@ -1339,13 +1321,9 @@ int jogo(Time meuTime, Time time2)
         }
     }
     printf("Fim de tempo! Placar final: Meu time %d x %d Time adversario\n", golsMeuTime, golstime2);
-    
-    return golsMeuTime,golstime2;
+
+    return golsMeuTime, golstime2;
 }
-
-
-
-
 
 MU_TEST(test_salvarArquivo)
 {
@@ -1553,41 +1531,42 @@ MU_TEST(test_escalacao_3_4_3)
     mu_assert_int_eq(4, numMeioCampo);
 }
 
-MU_TEST(test_jogo){
+MU_TEST(test_jogo)
+{
 
-   
     Time timeAdversario;
     leArquivo("jogadores.txt");
     int escolha = 1;
     escalacao(meuTime, escolha);
-  int resultado = jogo(meuTime, time2);
-    
+    int resultado = jogo(meuTime, time2);
+
     // Verifique se o resultado é válido
     mu_assert(resultado >= 0, "Erro: resultado inválido.");
 }
 
-MU_TEST(test_jogo2){
+MU_TEST(test_jogo2)
+{
 
-   
-    Time time3 =  {"Jonmas", 120.0, 130.2, {} };
-    Time time4 =  {"JUNZA", 120.0, 130.2, {} };
+    Time time3 = {"Jonmas", 120.0, 130.2, {}};
+    Time time4 = {"JUNZA", 120.0, 130.2, {}};
     leArquivo("jogadores.txt");
     int escolha = 1;
-    
-  int resultado = jogo2pt1(time3, time4);
-    
+
+    int resultado = jogo2pt1(time3, time4);
+
     // Verifique se o resultado é válido
     mu_assert(resultado >= 0, "Erro: resultado inválido.");
 }
 
+MU_TEST(test_CalcularMedias)
+{
 
-MU_TEST(test_chanceGol442){
-    
+    leArquivo("jogadores.txt");
+    calcular_medias(meuTime.jogadores, 25, &meuTime);
+
+    mu_assert_int_eq(121.0, meuTime.defesa);
+    mu_assert_int_eq(125.0, meuTime.ataque);
 }
-
-
-
-
 
 // Função que roda todos os testes
 MU_TEST_SUITE(test_suite)
@@ -1600,8 +1579,7 @@ MU_TEST_SUITE(test_suite)
     MU_RUN_TEST(test_escalacao_4_4_2);
     MU_RUN_TEST(test_escalacao_4_3_3);
     MU_RUN_TEST(test_escalacao_3_4_3);
-    MU_RUN_TEST(test_jogo2);
-    MU_RUN_TEST(test_jogo);
+    MU_RUN_TEST(test_CalcularMedias);
 }
 
 int main()

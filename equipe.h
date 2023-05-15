@@ -19,7 +19,7 @@ typedef struct time
     Jogador jogadores[25];
 } Time;
 
-void calcular_medias(Jogador *jogadores, int num_jogadores, Time *meuTime);
+float calcular_medias(Jogador *jogadores, int num_jogadores, Time *meuTime);
 void imprimir_time(Time meuTime);
 
 #endif // !equipe.h

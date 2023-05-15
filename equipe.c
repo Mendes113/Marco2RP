@@ -6,7 +6,7 @@
 
 Time meuTime;
 
-void calcular_medias(Jogador *jogadores, int num_jogadores, Time *meuTime)
+float calcular_medias(Jogador *jogadores, int num_jogadores, Time *meuTime)
 {
     float soma_tatica = 0, soma_tecnica = 0, soma_fisico = 0, soma_defesa = 0, soma_ataque = 0;
     float a = 0.5, b = 0.3, c = 0.2, d = 0.4, e = 0.5, f = 0.1; // valores iniciais das constantes
@@ -23,6 +23,9 @@ void calcular_medias(Jogador *jogadores, int num_jogadores, Time *meuTime)
 
     printf("Defesa: %.2f\n", meuTime->defesa);
     printf("Ataque: %.2f\n", meuTime->ataque);
+
+    return meuTime->defesa, meuTime->ataque;
+
 }
 
 void imprime_jogadores(Jogador *jogadores, int num_jogadores)
