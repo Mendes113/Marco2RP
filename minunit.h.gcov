@@ -1,0 +1,396 @@
+        -:    0:Source:minunit.h
+        -:    0:Graph:Testes.gcno
+        -:    0:Data:Testes.gcda
+        -:    0:Runs:1
+        -:    0:Programs:1
+        -:    1:/*
+        -:    2: * Copyright (c) 2012 David Siñuela Pastor, siu.4coders@gmail.com
+        -:    3: * 
+        -:    4: * Permission is hereby granted, free of charge, to any person obtaining
+        -:    5: * a copy of this software and associated documentation files (the
+        -:    6: * "Software"), to deal in the Software without restriction, including
+        -:    7: * without limitation the rights to use, copy, modify, merge, publish,
+        -:    8: * distribute, sublicense, and/or sell copies of the Software, and to
+        -:    9: * permit persons to whom the Software is furnished to do so, subject to
+        -:   10: * the following conditions:
+        -:   11: * 
+        -:   12: * The above copyright notice and this permission notice shall be
+        -:   13: * included in all copies or substantial portions of the Software.
+        -:   14: * 
+        -:   15: * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+        -:   16: * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+        -:   17: * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+        -:   18: * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+        -:   19: * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+        -:   20: * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+        -:   21: * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+        -:   22: */
+        -:   23:#ifndef MINUNIT_MINUNIT_H
+        -:   24:#define MINUNIT_MINUNIT_H
+        -:   25:
+        -:   26:#ifdef __cplusplus
+        -:   27:	extern "C" {
+        -:   28:#endif
+        -:   29:
+        -:   30:#if defined(_WIN32)
+        -:   31:#include <Windows.h>
+        -:   32:#if defined(_MSC_VER) && _MSC_VER < 1900
+        -:   33:  #define snprintf _snprintf
+        -:   34:  #define __func__ __FUNCTION__
+        -:   35:#endif
+        -:   36:
+        -:   37:#elif defined(__unix__) || defined(__unix) || defined(unix) || (defined(__APPLE__) && defined(__MACH__))
+        -:   38:
+        -:   39:/* Change POSIX C SOURCE version for pure c99 compilers */
+        -:   40:#if !defined(_POSIX_C_SOURCE) || _POSIX_C_SOURCE < 200112L
+        -:   41:#undef _POSIX_C_SOURCE
+        -:   42:#define _POSIX_C_SOURCE 200112L
+        -:   43:#endif
+        -:   44:
+        -:   45:#include <unistd.h>	/* POSIX flags */
+        -:   46:#include <time.h>	/* clock_gettime(), time() */
+        -:   47:#include <sys/time.h>	/* gethrtime(), gettimeofday() */
+        -:   48:#include <sys/resource.h>
+        -:   49:#include <sys/times.h>
+        -:   50:#include <string.h>
+        -:   51:
+        -:   52:#if defined(__MACH__) && defined(__APPLE__)
+        -:   53:#include <mach/mach.h>
+        -:   54:#include <mach/mach_time.h>
+        -:   55:#endif
+        -:   56:
+        -:   57:#if __GNUC__ >= 5 && !defined(__STDC_VERSION__)
+        -:   58:#define __func__ __extension__ __FUNCTION__
+        -:   59:#endif
+        -:   60:
+        -:   61:#else
+        -:   62:#error "Unable to define timers for an unknown OS."
+        -:   63:#endif
+        -:   64:
+        -:   65:#include <stdio.h>
+        -:   66:#include <math.h>
+        -:   67:
+        -:   68:/*  Maximum length of last message */
+        -:   69:#define MINUNIT_MESSAGE_LEN 1024
+        -:   70:/*  Accuracy with which floats are compared */
+        -:   71:#define MINUNIT_EPSILON 1E-12
+        -:   72:
+        -:   73:/*  Misc. counters */
+        -:   74:static int minunit_run = 0;
+        -:   75:static int minunit_assert = 0;
+        -:   76:static int minunit_fail = 0;
+        -:   77:static int minunit_status = 0;
+        -:   78:
+        -:   79:/*  Timers */
+        -:   80:static double minunit_real_timer = 0;
+        -:   81:static double minunit_proc_timer = 0;
+        -:   82:
+        -:   83:/*  Last message */
+        -:   84:static char minunit_last_message[MINUNIT_MESSAGE_LEN];
+        -:   85:
+        -:   86:/*  Test setup and teardown function pointers */
+        -:   87:static void (*minunit_setup)(void) = NULL;
+        -:   88:static void (*minunit_teardown)(void) = NULL;
+        -:   89:
+        -:   90:/*  Definitions */
+        -:   91:#define MU_TEST(method_name) static void method_name(void)
+        -:   92:#define MU_TEST_SUITE(suite_name) static void suite_name(void)
+        -:   93:
+        -:   94:#define MU__SAFE_BLOCK(block) do {\
+        -:   95:	block\
+        -:   96:} while(0)
+        -:   97:
+        -:   98:/*  Run test suite and unset setup and teardown functions */
+        -:   99:#define MU_RUN_SUITE(suite_name) MU__SAFE_BLOCK(\
+        -:  100:	suite_name();\
+        -:  101:	minunit_setup = NULL;\
+        -:  102:	minunit_teardown = NULL;\
+        -:  103:)
+        -:  104:
+        -:  105:/*  Configure setup and teardown functions */
+        -:  106:#define MU_SUITE_CONFIGURE(setup_fun, teardown_fun) MU__SAFE_BLOCK(\
+        -:  107:	minunit_setup = setup_fun;\
+        -:  108:	minunit_teardown = teardown_fun;\
+        -:  109:)
+        -:  110:
+        -:  111:/*  Test runner */
+        -:  112:#define MU_RUN_TEST(test) MU__SAFE_BLOCK(\
+        -:  113:	if (minunit_real_timer==0 && minunit_proc_timer==0) {\
+        -:  114:		minunit_real_timer = mu_timer_real();\
+        -:  115:		minunit_proc_timer = mu_timer_cpu();\
+        -:  116:	}\
+        -:  117:	if (minunit_setup) (*minunit_setup)();\
+        -:  118:	minunit_status = 0;\
+        -:  119:	test();\
+        -:  120:	minunit_run++;\
+        -:  121:	if (minunit_status) {\
+        -:  122:		minunit_fail++;\
+        -:  123:		printf("F");\
+        -:  124:		printf("\n%s\n", minunit_last_message);\
+        -:  125:	}\
+        -:  126:	fflush(stdout);\
+        -:  127:	if (minunit_teardown) (*minunit_teardown)();\
+        -:  128:)
+        -:  129:
+        -:  130:/*  Report */
+        -:  131:#define MU_REPORT() MU__SAFE_BLOCK(\
+        -:  132:	double minunit_end_real_timer;\
+        -:  133:	double minunit_end_proc_timer;\
+        -:  134:	printf("\n\n%d tests, %d assertions, %d failures\n", minunit_run, minunit_assert, minunit_fail);\
+        -:  135:	minunit_end_real_timer = mu_timer_real();\
+        -:  136:	minunit_end_proc_timer = mu_timer_cpu();\
+        -:  137:	printf("\nFinished in %.8f seconds (real) %.8f seconds (proc)\n\n",\
+        -:  138:		minunit_end_real_timer - minunit_real_timer,\
+        -:  139:		minunit_end_proc_timer - minunit_proc_timer);\
+        -:  140:)
+        -:  141:#define MU_EXIT_CODE minunit_fail
+        -:  142:
+        -:  143:/*  Assertions */
+        -:  144:#define mu_check(test) MU__SAFE_BLOCK(\
+        -:  145:	minunit_assert++;\
+        -:  146:	if (!(test)) {\
+        -:  147:		snprintf(minunit_last_message, MINUNIT_MESSAGE_LEN, "%s failed:\n\t%s:%d: %s", __func__, __FILE__, __LINE__, #test);\
+        -:  148:		minunit_status = 1;\
+        -:  149:		return;\
+        -:  150:	} else {\
+        -:  151:		printf(".");\
+        -:  152:	}\
+        -:  153:)
+        -:  154:
+        -:  155:#define mu_fail(message) MU__SAFE_BLOCK(\
+        -:  156:	minunit_assert++;\
+        -:  157:	snprintf(minunit_last_message, MINUNIT_MESSAGE_LEN, "%s failed:\n\t%s:%d: %s", __func__, __FILE__, __LINE__, message);\
+        -:  158:	minunit_status = 1;\
+        -:  159:	return;\
+        -:  160:)
+        -:  161:
+        -:  162:#define mu_assert(test, message) MU__SAFE_BLOCK(\
+        -:  163:	minunit_assert++;\
+        -:  164:	if (!(test)) {\
+        -:  165:		snprintf(minunit_last_message, MINUNIT_MESSAGE_LEN, "%s failed:\n\t%s:%d: %s", __func__, __FILE__, __LINE__, message);\
+        -:  166:		minunit_status = 1;\
+        -:  167:		return;\
+        -:  168:	} else {\
+        -:  169:		printf(".");\
+        -:  170:	}\
+        -:  171:)
+        -:  172:
+        -:  173:#define mu_assert_int_eq(expected, result) MU__SAFE_BLOCK(\
+        -:  174:	int minunit_tmp_e;\
+        -:  175:	int minunit_tmp_r;\
+        -:  176:	minunit_assert++;\
+        -:  177:	minunit_tmp_e = (expected);\
+        -:  178:	minunit_tmp_r = (result);\
+        -:  179:	if (minunit_tmp_e != minunit_tmp_r) {\
+        -:  180:		snprintf(minunit_last_message, MINUNIT_MESSAGE_LEN, "%s failed:\n\t%s:%d: %d expected but was %d", __func__, __FILE__, __LINE__, minunit_tmp_e, minunit_tmp_r);\
+        -:  181:		minunit_status = 1;\
+        -:  182:		return;\
+        -:  183:	} else {\
+        -:  184:		printf(".");\
+        -:  185:	}\
+        -:  186:)
+        -:  187:
+        -:  188:#define mu_assert_double_eq(expected, result) MU__SAFE_BLOCK(\
+        -:  189:	double minunit_tmp_e;\
+        -:  190:	double minunit_tmp_r;\
+        -:  191:	minunit_assert++;\
+        -:  192:	minunit_tmp_e = (expected);\
+        -:  193:	minunit_tmp_r = (result);\
+        -:  194:	if (fabs(minunit_tmp_e-minunit_tmp_r) > MINUNIT_EPSILON) {\
+        -:  195:		int minunit_significant_figures = 1 - log10(MINUNIT_EPSILON);\
+        -:  196:		snprintf(minunit_last_message, MINUNIT_MESSAGE_LEN, "%s failed:\n\t%s:%d: %.*g expected but was %.*g", __func__, __FILE__, __LINE__, minunit_significant_figures, minunit_tmp_e, minunit_significant_figures, minunit_tmp_r);\
+        -:  197:		minunit_status = 1;\
+        -:  198:		return;\
+        -:  199:	} else {\
+        -:  200:		printf(".");\
+        -:  201:	}\
+        -:  202:)
+        -:  203:
+        -:  204:#define mu_assert_string_eq(expected, result) MU__SAFE_BLOCK(\
+        -:  205:	const char* minunit_tmp_e = expected;\
+        -:  206:	const char* minunit_tmp_r = result;\
+        -:  207:	minunit_assert++;\
+        -:  208:	if (!minunit_tmp_e) {\
+        -:  209:		minunit_tmp_e = "<null pointer>";\
+        -:  210:	}\
+        -:  211:	if (!minunit_tmp_r) {\
+        -:  212:		minunit_tmp_r = "<null pointer>";\
+        -:  213:	}\
+        -:  214:	if(strcmp(minunit_tmp_e, minunit_tmp_r)) {\
+        -:  215:		snprintf(minunit_last_message, MINUNIT_MESSAGE_LEN, "%s failed:\n\t%s:%d: '%s' expected but was '%s'", __func__, __FILE__, __LINE__, minunit_tmp_e, minunit_tmp_r);\
+        -:  216:		minunit_status = 1;\
+        -:  217:		return;\
+        -:  218:	} else {\
+        -:  219:		printf(".");\
+        -:  220:	}\
+        -:  221:)
+        -:  222:
+        -:  223:/*
+        -:  224: * The following two functions were written by David Robert Nadeau
+        -:  225: * from http://NadeauSoftware.com/ and distributed under the
+        -:  226: * Creative Commons Attribution 3.0 Unported License
+        -:  227: */
+        -:  228:
+        -:  229:/**
+        -:  230: * Returns the real time, in seconds, or -1.0 if an error occurred.
+        -:  231: *
+        -:  232: * Time is measured since an arbitrary and OS-dependent start time.
+        -:  233: * The returned real time is only useful for computing an elapsed time
+        -:  234: * between two calls to this function.
+        -:  235: */
+        2:  236:static double mu_timer_real(void)
+        -:  237:{
+        -:  238:#if defined(_WIN32)
+        -:  239:	/* Windows 2000 and later. ---------------------------------- */
+        -:  240:	LARGE_INTEGER Time;
+        -:  241:	LARGE_INTEGER Frequency;
+        -:  242:	
+        2:  243:	QueryPerformanceFrequency(&Frequency);
+        2:  244:	QueryPerformanceCounter(&Time);
+        -:  245:	
+        2:  246:	Time.QuadPart *= 1000000;
+        2:  247:	Time.QuadPart /= Frequency.QuadPart;
+        -:  248:	
+        2:  249:	return (double)Time.QuadPart / 1000000.0;
+        -:  250:
+        -:  251:#elif (defined(__hpux) || defined(hpux)) || ((defined(__sun__) || defined(__sun) || defined(sun)) && (defined(__SVR4) || defined(__svr4__)))
+        -:  252:	/* HP-UX, Solaris. ------------------------------------------ */
+        -:  253:	return (double)gethrtime( ) / 1000000000.0;
+        -:  254:
+        -:  255:#elif defined(__MACH__) && defined(__APPLE__)
+        -:  256:	/* OSX. ----------------------------------------------------- */
+        -:  257:	static double timeConvert = 0.0;
+        -:  258:	if ( timeConvert == 0.0 )
+        -:  259:	{
+        -:  260:		mach_timebase_info_data_t timeBase;
+        -:  261:		(void)mach_timebase_info( &timeBase );
+        -:  262:		timeConvert = (double)timeBase.numer /
+        -:  263:			(double)timeBase.denom /
+        -:  264:			1000000000.0;
+        -:  265:	}
+        -:  266:	return (double)mach_absolute_time( ) * timeConvert;
+        -:  267:
+        -:  268:#elif defined(_POSIX_VERSION)
+        -:  269:	/* POSIX. --------------------------------------------------- */
+        -:  270:	struct timeval tm;
+        -:  271:#if defined(_POSIX_TIMERS) && (_POSIX_TIMERS > 0)
+        -:  272:	{
+        -:  273:		struct timespec ts;
+        -:  274:#if defined(CLOCK_MONOTONIC_PRECISE)
+        -:  275:		/* BSD. --------------------------------------------- */
+        -:  276:		const clockid_t id = CLOCK_MONOTONIC_PRECISE;
+        -:  277:#elif defined(CLOCK_MONOTONIC_RAW)
+        -:  278:		/* Linux. ------------------------------------------- */
+        -:  279:		const clockid_t id = CLOCK_MONOTONIC_RAW;
+        -:  280:#elif defined(CLOCK_HIGHRES)
+        -:  281:		/* Solaris. ----------------------------------------- */
+        -:  282:		const clockid_t id = CLOCK_HIGHRES;
+        -:  283:#elif defined(CLOCK_MONOTONIC)
+        -:  284:		/* AIX, BSD, Linux, POSIX, Solaris. ----------------- */
+        -:  285:		const clockid_t id = CLOCK_MONOTONIC;
+        -:  286:#elif defined(CLOCK_REALTIME)
+        -:  287:		/* AIX, BSD, HP-UX, Linux, POSIX. ------------------- */
+        -:  288:		const clockid_t id = CLOCK_REALTIME;
+        -:  289:#else
+        -:  290:		const clockid_t id = (clockid_t)-1;	/* Unknown. */
+        -:  291:#endif /* CLOCK_* */
+        -:  292:		if ( id != (clockid_t)-1 && clock_gettime( id, &ts ) != -1 )
+        -:  293:			return (double)ts.tv_sec +
+        -:  294:				(double)ts.tv_nsec / 1000000000.0;
+        -:  295:		/* Fall thru. */
+        -:  296:	}
+        -:  297:#endif /* _POSIX_TIMERS */
+        -:  298:
+        -:  299:	/* AIX, BSD, Cygwin, HP-UX, Linux, OSX, POSIX, Solaris. ----- */
+        -:  300:	gettimeofday( &tm, NULL );
+        -:  301:	return (double)tm.tv_sec + (double)tm.tv_usec / 1000000.0;
+        -:  302:#else
+        -:  303:	return -1.0;		/* Failed. */
+        -:  304:#endif
+        -:  305:}
+        -:  306:
+        -:  307:/**
+        -:  308: * Returns the amount of CPU time used by the current process,
+        -:  309: * in seconds, or -1.0 if an error occurred.
+        -:  310: */
+        2:  311:static double mu_timer_cpu(void)
+        -:  312:{
+        -:  313:#if defined(_WIN32)
+        -:  314:	/* Windows -------------------------------------------------- */
+        -:  315:	FILETIME createTime;
+        -:  316:	FILETIME exitTime;
+        -:  317:	FILETIME kernelTime;
+        -:  318:	FILETIME userTime;
+        -:  319:
+        -:  320:	/* This approach has a resolution of 1/64 second. Unfortunately, Windows' API does not offer better */
+        2:  321:	if ( GetProcessTimes( GetCurrentProcess( ),
+        -:  322:		&createTime, &exitTime, &kernelTime, &userTime ) != 0 )
+        -:  323:	{
+        -:  324:		ULARGE_INTEGER userSystemTime;
+        2:  325:		memcpy(&userSystemTime, &userTime, sizeof(ULARGE_INTEGER));
+        2:  326:		return (double)userSystemTime.QuadPart / 10000000.0;
+        -:  327:	}
+        -:  328:
+        -:  329:#elif defined(__unix__) || defined(__unix) || defined(unix) || (defined(__APPLE__) && defined(__MACH__))
+        -:  330:	/* AIX, BSD, Cygwin, HP-UX, Linux, OSX, and Solaris --------- */
+        -:  331:
+        -:  332:#if defined(_POSIX_TIMERS) && (_POSIX_TIMERS > 0)
+        -:  333:	/* Prefer high-res POSIX timers, when available. */
+        -:  334:	{
+        -:  335:		clockid_t id;
+        -:  336:		struct timespec ts;
+        -:  337:#if _POSIX_CPUTIME > 0
+        -:  338:		/* Clock ids vary by OS.  Query the id, if possible. */
+        -:  339:		if ( clock_getcpuclockid( 0, &id ) == -1 )
+        -:  340:#endif
+        -:  341:#if defined(CLOCK_PROCESS_CPUTIME_ID)
+        -:  342:			/* Use known clock id for AIX, Linux, or Solaris. */
+        -:  343:			id = CLOCK_PROCESS_CPUTIME_ID;
+        -:  344:#elif defined(CLOCK_VIRTUAL)
+        -:  345:			/* Use known clock id for BSD or HP-UX. */
+        -:  346:			id = CLOCK_VIRTUAL;
+        -:  347:#else
+        -:  348:			id = (clockid_t)-1;
+        -:  349:#endif
+        -:  350:		if ( id != (clockid_t)-1 && clock_gettime( id, &ts ) != -1 )
+        -:  351:			return (double)ts.tv_sec +
+        -:  352:				(double)ts.tv_nsec / 1000000000.0;
+        -:  353:	}
+        -:  354:#endif
+        -:  355:
+        -:  356:#if defined(RUSAGE_SELF)
+        -:  357:	{
+        -:  358:		struct rusage rusage;
+        -:  359:		if ( getrusage( RUSAGE_SELF, &rusage ) != -1 )
+        -:  360:			return (double)rusage.ru_utime.tv_sec +
+        -:  361:				(double)rusage.ru_utime.tv_usec / 1000000.0;
+        -:  362:	}
+        -:  363:#endif
+        -:  364:
+        -:  365:#if defined(_SC_CLK_TCK)
+        -:  366:	{
+        -:  367:		const double ticks = (double)sysconf( _SC_CLK_TCK );
+        -:  368:		struct tms tms;
+        -:  369:		if ( times( &tms ) != (clock_t)-1 )
+        -:  370:			return (double)tms.tms_utime / ticks;
+        -:  371:	}
+        -:  372:#endif
+        -:  373:
+        -:  374:#if defined(CLOCKS_PER_SEC)
+        -:  375:	{
+        -:  376:		clock_t cl = clock( );
+        -:  377:		if ( cl != (clock_t)-1 )
+        -:  378:			return (double)cl / (double)CLOCKS_PER_SEC;
+        -:  379:	}
+        -:  380:#endif
+        -:  381:
+        -:  382:#endif
+        -:  383:
+    #####:  384:	return -1;		/* Failed. */
+        -:  385:}
+        -:  386:
+        -:  387:#ifdef __cplusplus
+        -:  388:}
+        -:  389:#endif
+        -:  390:
+        -:  391:#endif /* MINUNIT_MINUNIT_H */
